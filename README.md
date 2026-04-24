@@ -47,7 +47,12 @@ screens is not notarized yet, so macOS will complain the first time. here's exac
 
 **if you see "unidentified developer":**
 
-> right-click (or ctrl-click) `screens.app` in your Applications folder → click **Open** → click **Open** again in the dialog. you only need to do this once.
+> 1. click **OK** to dismiss the alert
+> 2. open **System Settings** → **Privacy & Security** → scroll down
+> 3. you'll see _"screens was blocked from use because it is not from an identified developer"_ → click **Open Anyway**
+> 4. enter your Mac password if prompted → click **Open Anyway** again
+>
+> that's it. you only need to do this once.
 
 **if you see "damaged and can't be opened":**
 
