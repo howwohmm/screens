@@ -38,8 +38,26 @@ Free and open source.
 
 1. download `screens.dmg` from [releases](../../releases/latest)
 2. open the DMG, drag `screens` → Applications
-3. right-click → Open on first launch (ad-hoc signed — no notarization yet)
+3. **right-click** the app → click **Open** (do not double-click — see below)
 4. click the `⊡` icon in your menu bar → add a public Are.na channel slug
+
+### macOS security warning (read this)
+
+screens is not notarized yet, so macOS will complain the first time. here's exactly what to do:
+
+**if you see "unidentified developer":**
+
+> right-click (or ctrl-click) `screens.app` in your Applications folder → click **Open** → click **Open** again in the dialog. you only need to do this once.
+
+**if you see "damaged and can't be opened":**
+
+> macOS quarantined the file because it came from the internet. open **Terminal** (press `⌘Space`, type `terminal`, hit enter) and paste this:
+> ```
+> xattr -cr /Applications/screens.app
+> ```
+> then try opening again normally.
+
+macOS will fully trust the app after the first successful open — no warnings after that.
 
 ## usage
 
