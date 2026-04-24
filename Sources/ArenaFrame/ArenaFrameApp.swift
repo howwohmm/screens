@@ -59,7 +59,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: "rectangle.on.rectangle.angled",
-                                   accessibilityDescription: "arenaframe")
+                                   accessibilityDescription: "screens")
             button.image?.isTemplate = true
             button.action = #selector(handleStatusClick)
             button.target = self

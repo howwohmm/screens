@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="Assets.xcassets/AppIcon.appiconset/icon_1024.png" width="100" alt="arenaframe icon" />
+  <img src="Assets.xcassets/AppIcon.appiconset/icon_1024.png" width="100" alt="screens icon" />
 </p>
 
-<h1 align="center">arenaframe</h1>
+<h1 align="center">screens</h1>
 <p align="center"><strong>your monitor. a channel.</strong></p>
 
 <p align="center">
@@ -36,8 +36,8 @@ Free and open source.
 
 ## install
 
-1. download `arenaframe.dmg` from [releases](../../releases/latest)
-2. open the DMG, drag `arenaframe` → Applications
+1. download `screens.dmg` from [releases](../../releases/latest)
+2. open the DMG, drag `screens` → Applications
 3. right-click → Open on first launch (ad-hoc signed — no notarization yet)
 4. click the `⊡` icon in your menu bar → add a public Are.na channel slug
 

@@ -22,7 +22,7 @@ struct AboutView: View {
                 Spacer().frame(height: 16)
 
                 // Name
-                Text("arenaframe")
+                Text("screens")
                     .font(.system(size: 20, weight: .thin))
                     .foregroundStyle(.white)
                     .kerning(1.5)
@@ -56,7 +56,7 @@ struct AboutView: View {
 
                 // Links
                 HStack(spacing: 20) {
-                    linkButton("github", url: "https://github.com/ohmdreams/arenaframe")
+                    linkButton("github", url: "https://github.com/howwohmm/arenaframe")
                     linkButton("support", url: "mailto:mishraom.work@gmail.com")
                     linkButton("are.na", url: "https://are.na")
                 }

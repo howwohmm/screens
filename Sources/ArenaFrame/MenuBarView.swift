@@ -13,7 +13,7 @@ struct MenuBarView: View {
             // Brand
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("arenaframe")
+                    Text("screens")
                         .font(.system(size: 13, weight: .thin))
                         .foregroundStyle(.primary)
                         .kerning(0.8)
