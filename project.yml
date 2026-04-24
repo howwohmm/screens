@@ -1,0 +1,40 @@
+name: ArenaFrame
+options:
+  bundleIdPrefix: quest.ohm
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+targets:
+  ArenaFrame:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources/ArenaFrame
+      - path: Assets.xcassets
+        type: resource
+    info:
+      path: Info.plist
+      properties:
+        CFBundleName: arenaframe
+        CFBundleDisplayName: arenaframe
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        LSUIElement: true
+        NSHumanReadableCopyright: "© 2025 ohm. · MIT License"
+        LSMinimumSystemVersion: "14.0"
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: quest.ohm.arenaframe
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: TJ7LBM77LA
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: YES
+        OTHER_LDFLAGS: "-framework Carbon"
+        PRODUCT_NAME: arenaframe
