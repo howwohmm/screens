@@ -46,7 +46,7 @@ struct OnboardingView: View {
 
     private var welcomeStep: some View {
         VStack(spacing: 24) {
-            Text("arenaframe")
+            Text("screens")
                 .font(.system(size: 32, weight: .thin))
                 .foregroundStyle(.white)
                 .kerning(2)
@@ -138,7 +138,7 @@ struct OnboardingView: View {
                 .font(.system(size: 28, weight: .light))
                 .foregroundStyle(.white)
 
-            Text("press ⌘⇧A anytime to open arenaframe\nESC or Q to close.")
+            Text("press ⌘⇧A anytime to open screens\nESC or Q to close.")
                 .font(.system(size: 13, weight: .light))
                 .foregroundStyle(.white.opacity(0.5))
                 .multilineTextAlignment(.center)
