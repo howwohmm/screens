@@ -347,8 +347,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				OTHER_LDFLAGS = "-framework Carbon";
-				PRODUCT_BUNDLE_IDENTIFIER = quest.ohm.arenaframe;
-				PRODUCT_NAME = arenaframe;
+				PRODUCT_BUNDLE_IDENTIFIER = quest.ohm.screens;
+				PRODUCT_NAME = screens;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
 			};
@@ -369,8 +369,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				OTHER_LDFLAGS = "-framework Carbon";
-				PRODUCT_BUNDLE_IDENTIFIER = quest.ohm.arenaframe;
-				PRODUCT_NAME = arenaframe;
+				PRODUCT_BUNDLE_IDENTIFIER = quest.ohm.screens;
+				PRODUCT_NAME = screens;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
 			};

@@ -20,8 +20,8 @@ targets:
       properties:
         CFBundleName: screens
         CFBundleDisplayName: screens
-        CFBundleShortVersionString: "1.0.0"
-        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0.1"
+        CFBundleVersion: "2"
         LSUIElement: true
         NSHumanReadableCopyright: "© 2026 ohm. · MIT License"
         LSMinimumSystemVersion: "14.0"
