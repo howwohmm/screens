@@ -28,6 +28,7 @@ actor ArenaClient {
         let config = URLSessionConfiguration.default
         config.httpAdditionalHeaders = ["User-Agent": "screens/1.0"]
         config.timeoutIntervalForRequest = 15
+        config.timeoutIntervalForResource = 30
         self.session = URLSession(configuration: config)
     }
 

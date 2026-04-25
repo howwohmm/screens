@@ -79,17 +79,24 @@ struct ArenaImageDTO: Decodable {
     let original: ArenaImageSizeDTO?
 
     var resolvedURL: URL? {
-        let raw = src
-            ?? large?.url ?? large?.src
-            ?? display?.url ?? display?.src
-            ?? original?.url ?? original?.src
-        return raw.flatMap { URL(string: $0) }
+        let candidates = [
+            original?.url, original?.src,
+            large?.url,    large?.src,
+            display?.url,  display?.src,
+            src
+        ]
+        return candidates
+            .compactMap { $0 }
+            .first { !$0.isEmpty }
+            .flatMap { URL(string: $0) }
     }
 }
 
 struct ArenaImageSizeDTO: Decodable {
     let url: String?
     let src: String?
+    let width: Int?
+    let height: Int?
 }
 
 enum ArenaContentDTO: Decodable {
@@ -126,8 +133,8 @@ extension ArenaBlockDTO {
 
         if let img = image {
             imageURL = img.resolvedURL
-            imageW   = img.width
-            imageH   = img.height
+            imageW = img.original?.width ?? img.large?.width ?? img.display?.width
+            imageH = img.original?.height ?? img.large?.height ?? img.display?.height
         }
 
         let textContent = content?.plainText
