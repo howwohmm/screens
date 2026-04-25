@@ -2,24 +2,24 @@ import Foundation
 
 // MARK: - Display enums used across Settings + FrameView
 
+// cover mode removed — it crops content by design (right/bottom edges lost on
+// any portrait or square image). blurFill gives the same full-screen fill
+// without ever clipping, so there's no good reason to keep cover.
 enum FitMode: String, CaseIterable, Identifiable {
     case contain  = "contain"
-    case cover    = "cover"
     case blurFill = "blurFill"
 
     var id: String { rawValue }
     var label: String {
         switch self {
         case .contain:  return "contain"
-        case .cover:    return "cover"
         case .blurFill: return "blur fill"
         }
     }
     var description: String {
         switch self {
         case .contain:  return "full image, letterboxed"
-        case .cover:    return "fill screen, crop edges"
-        case .blurFill: return "contain + blurred bg"
+        case .blurFill: return "full screen + blurred bg"
         }
     }
 }

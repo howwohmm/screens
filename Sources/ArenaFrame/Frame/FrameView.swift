@@ -79,40 +79,35 @@ struct FrameView: View {
         switch appState.fitMode {
 
         case .contain:
-            // No scaleEffect here — Ken Burns on a letterboxed image zooms into
-            // the black bars, not the image. Contain shows the full image cleanly.
+            // Full image always visible — no scaleEffect, no clip.
+            // ignoresSafeArea so the image fills the real screen pixels,
+            // not the menu-bar-minus safe area box.
             Image(nsImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-        case .cover:
-            // scaleEffect BEFORE clipped — zoom happens inside the frame boundary.
-            // Old order (clipped → scaleEffect) caused black edges during Ken Burns.
-            Image(nsImage: img)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scaleEffect(kbScale, anchor: kbAnchor)
-                .clipped()
+                .ignoresSafeArea()
 
         case .blurFill:
             ZStack {
-                // Ken Burns on the blurred background — fills frame, no black bars
+                // Blurred background fills screen — KB zoom is safe here,
+                // the blur hides any edge artefacts from the scale.
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scaleEffect(kbScale, anchor: kbAnchor)
                     .blur(radius: 40)
-                    .overlay(Color.black.opacity(0.4))
+                    .overlay(Color.black.opacity(0.35))
                     .clipped()
+                    .ignoresSafeArea()
 
-                // Contained image on top — crisp and static
+                // Contained image on top — crisp, static, never clipped.
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea()
             }
         }
     }
@@ -222,11 +217,6 @@ struct FrameView: View {
         }
 
         guard appState.transitionStyle == .kenBurns else { return }
-
-        // Cover mode: image already fills the screen via .fill — adding any scale
-        // crops content (205 pts at 1.08× on a 2560-wide screen). Keep scale at 1.0;
-        // the crossfade transition still runs, giving a clean cut.
-        guard appState.fitMode != .cover else { return }
 
         let anchors: [UnitPoint] = [.topLeading, .top, .topTrailing,
                                      .leading, .center, .trailing,

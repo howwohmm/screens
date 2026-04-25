@@ -227,14 +227,6 @@ struct SettingsView: View {
                 RoundedRectangle(cornerRadius: 2).fill(Color.white.opacity(0.25))
                     .frame(width: 24, height: 18)
             }
-        case .cover:
-            // Rect that fills and clips
-            ZStack {
-                RoundedRectangle(cornerRadius: 3).fill(Color.white.opacity(0.25))
-                    .frame(width: 38, height: 28)
-                RoundedRectangle(cornerRadius: 3).stroke(Color.white.opacity(0.4), lineWidth: 1)
-                    .frame(width: 38, height: 28)
-            }
         case .blurFill:
             ZStack {
                 RoundedRectangle(cornerRadius: 3).fill(Color.white.opacity(0.1))

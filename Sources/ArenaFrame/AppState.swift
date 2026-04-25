@@ -80,7 +80,9 @@ final class AppState {
         self.channelSlugs      = d.stringArray(forKey: "channelSlugs") ?? []
         self.intervalSeconds   = d.double(forKey: "intervalSeconds").nonZeroOr(15)
         self.order             = BlockOrder(rawValue: d.string(forKey: "order") ?? "")  ?? .random
-        self.fitMode           = FitMode(rawValue: d.string(forKey: "fitMode") ?? "")  ?? .contain
+        // Default to blurFill. Migrate legacy "cover" to blurFill (cover mode removed).
+        let storedFit = FitMode(rawValue: d.string(forKey: "fitMode") ?? "")
+        self.fitMode = (storedFit == nil) ? .blurFill : (storedFit!)
         self.transitionStyle   = TransitionStyle(rawValue: d.string(forKey: "transitionStyle") ?? "") ?? .crossfade
         self.labelVisibility   = LabelVisibility(rawValue: d.string(forKey: "labelVisibility") ?? "") ?? .onHover
         // maxUpscale is now hardcoded — drop any stored value
