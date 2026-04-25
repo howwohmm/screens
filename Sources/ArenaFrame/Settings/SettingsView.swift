@@ -82,7 +82,12 @@ struct SettingsView: View {
                         Spacer()
                         Button {
                             appState.channelSlugs.removeAll { $0 == slug }
-                            appState.fetchAll()
+                            if appState.channelSlugs.isEmpty {
+                                appState.allBlocks = []
+                                appState.rebuildOrder()
+                            } else {
+                                appState.fetchAll()
+                            }
                         } label: {
                             Image(systemName: "xmark")
                                 .font(.system(size: 10))
@@ -407,11 +412,14 @@ struct SettingsView: View {
 
     private func addChannel() {
         var s = newSlug.trimmingCharacters(in: .whitespaces)
-        if let url = URL(string: s), url.host?.contains("are.na") == true {
+        if let url = URL(string: s),
+           let host = url.host,
+           host == "are.na" || host.hasSuffix(".are.na") {
             s = url.pathComponents.last ?? s
         }
+        s = s.lowercased()
         guard !s.isEmpty else { return }
-        guard !appState.channelSlugs.contains(s) else { addError = "already added"; return }
+        guard !appState.channelSlugs.map({ $0.lowercased() }).contains(s) else { addError = "already added"; return }
         addError = nil
         isAdding = true
         Task {

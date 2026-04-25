@@ -173,9 +173,12 @@ struct OnboardingView: View {
 
     private func resolvedSlug() -> String {
         var s = channelInput.trimmingCharacters(in: .whitespaces)
-        if let url = URL(string: s), let host = url.host, host.contains("are.na") {
+        if let url = URL(string: s),
+           let host = url.host,
+           host == "are.na" || host.hasSuffix(".are.na") {
             s = url.pathComponents.last ?? s
         }
+        s = s.lowercased()
         return s
     }
 
