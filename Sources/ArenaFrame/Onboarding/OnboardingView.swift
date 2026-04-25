@@ -187,10 +187,10 @@ struct OnboardingView: View {
         isValidating = true
         Task {
             do {
-                let result = try await appState.client.validateChannel(slug: slug)
+                let (name, count) = try await appState.client.validateChannel(slug: slug)
                 await MainActor.run {
-                    validatedName  = result.name
-                    validatedCount = result.count
+                    validatedName  = name
+                    validatedCount = count
                     isValidating   = false
                 }
             } catch let e as ArenaError {

@@ -43,12 +43,18 @@ struct ArenaChannelResponse: Decodable {
 }
 
 struct ArenaMeta: Decodable {
-    let hasMorePages: Bool?
     let currentPage: Int?
+    let totalPages: Int?
+
+    // Derived — the API sends total_pages/current_page, not has_more_pages
+    var hasMorePages: Bool {
+        guard let current = currentPage, let total = totalPages else { return false }
+        return current < total
+    }
 
     enum CodingKeys: String, CodingKey {
-        case hasMorePages = "has_more_pages"
-        case currentPage  = "current_page"
+        case currentPage = "current_page"
+        case totalPages  = "total_pages"
     }
 }
 

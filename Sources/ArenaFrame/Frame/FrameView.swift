@@ -62,38 +62,42 @@ struct FrameView: View {
     @ViewBuilder
     private func visualContent(img: NSImage) -> some View {
         switch appState.fitMode {
+
         case .contain:
+            // No scaleEffect here — Ken Burns on a letterboxed image zooms into
+            // the black bars, not the image. Contain shows the full image cleanly.
             Image(nsImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .scaleEffect(kbScale, anchor: kbAnchor)
 
         case .cover:
+            // scaleEffect BEFORE clipped — zoom happens inside the frame boundary.
+            // Old order (clipped → scaleEffect) caused black edges during Ken Burns.
             Image(nsImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
                 .scaleEffect(kbScale, anchor: kbAnchor)
+                .clipped()
 
         case .blurFill:
             ZStack {
-                // Blurred background fill
+                // Ken Burns on the blurred background — fills frame, no black bars
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaleEffect(kbScale, anchor: kbAnchor)
                     .blur(radius: 40)
-                    .overlay(Color.black.opacity(0.45))
+                    .overlay(Color.black.opacity(0.4))
                     .clipped()
 
-                // Sharp contained image on top
+                // Contained image on top — crisp and static
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scaleEffect(kbScale, anchor: kbAnchor)
             }
         }
     }
@@ -145,7 +149,7 @@ struct FrameView: View {
             Spacer()
 
             // Info bar (bottom)
-            if showOverlay || appState.labelVisibility == .always {
+            if showOverlay {
                 infoBar
                     .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             }
@@ -189,19 +193,27 @@ struct FrameView: View {
     // MARK: Ken Burns
 
     private func startKenBurns(duration: Double) {
-        guard appState.transitionStyle == .kenBurns else {
-            kbScale = 1.0; kbAnchor = .center; return
+        // Cancel any in-flight KB animation before starting a new one.
+        // Without this, the old animation's interpolated value overwrites the reset.
+        var cancel = Transaction()
+        cancel.disablesAnimations = true
+        withTransaction(cancel) {
+            kbScale = 1.0
+            kbAnchor = .center
         }
-        // Random start anchor and direction
+
+        guard appState.transitionStyle == .kenBurns else { return }
+
         let anchors: [UnitPoint] = [.topLeading, .top, .topTrailing,
                                      .leading, .center, .trailing,
                                      .bottomLeading, .bottom, .bottomTrailing]
-        kbScale = 1.0
+        // Pick distinct start + end anchors for visible directional drift
         kbAnchor = anchors.randomElement() ?? .center
+        let endAnchor = anchors.randomElement() ?? .center
+
         withAnimation(.linear(duration: max(duration, 5))) {
-            kbScale = 1.10
-            // Drift toward the opposite region
-            kbAnchor = anchors.randomElement() ?? .center
+            kbScale = 1.08
+            kbAnchor = endAnchor
         }
     }
 
@@ -227,6 +239,10 @@ struct FrameView: View {
 
         let img: NSImage? = localURL.flatMap { NSImage(contentsOf: $0) }
         guard !Task.isCancelled else { return }
+
+        // If the image failed to load (bad file, download error), keep showing
+        // the current slide — the slideshow timer will move on naturally.
+        guard let img else { return }
 
         await MainActor.run {
             let dur: Double = appState.transitionStyle == .instant ? 0 : 0.5

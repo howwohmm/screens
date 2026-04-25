@@ -41,7 +41,7 @@ struct SettingsView: View {
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 3) {
-                Text("arenaframe")
+                Text("screens")
                     .font(.system(size: 18, weight: .thin))
                     .foregroundStyle(.white)
                     .kerning(1.5)
@@ -353,7 +353,7 @@ struct SettingsView: View {
 
     private var footer: some View {
         HStack {
-            Text("arenaframe · made by ohm")
+            Text("screens · made by ohm")
                 .font(.system(size: 11, weight: .light))
                 .foregroundStyle(.white.opacity(0.15))
             Spacer()
@@ -416,7 +416,7 @@ struct SettingsView: View {
         isAdding = true
         Task {
             do {
-                _ = try await appState.client.validateChannel(slug: s)
+                let _ = try await appState.client.validateChannel(slug: s)
                 await MainActor.run {
                     appState.channelSlugs.append(s)
                     newSlug  = ""

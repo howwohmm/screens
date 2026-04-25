@@ -11,6 +11,9 @@ final class FrameWindowController: NSWindowController {
     private var cursorTimer: Timer?
     private var cursorHidden = false
 
+    // Event monitors — stored so we can remove them on deinit
+    private var eventMonitors: [Any] = []
+
     init(appState: AppState) {
         self.appState = appState
 
@@ -42,6 +45,10 @@ final class FrameWindowController: NSWindowController {
 
     required init?(coder: NSCoder) { fatalError() }
 
+    deinit {
+        eventMonitors.forEach { NSEvent.removeMonitor($0) }
+    }
+
     // MARK: Show / Hide
 
     var isVisible: Bool { window?.isVisible ?? false }
@@ -58,13 +65,11 @@ final class FrameWindowController: NSWindowController {
         appState.startSlideshow { [weak self] in
             self?.window?.contentView?.needsDisplay = true
         }
-        // Start cursor-hide timer when frame opens
         resetCursorTimer()
     }
 
     func hide() {
         guard let win = window, win.isVisible else { return }
-        // Always restore cursor when closing
         showCursor()
         cursorTimer?.invalidate()
 
@@ -83,13 +88,15 @@ final class FrameWindowController: NSWindowController {
     // MARK: Cursor hiding
 
     private func setupCursorHiding(_ win: NSWindow) {
-        // Intercept mouse-moved events to reset the hide timer
-        NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved, .mouseEntered, .leftMouseDragged]) { [weak self] event in
+        let monitor = NSEvent.addLocalMonitorForEvents(
+            matching: [.mouseMoved, .mouseEntered, .leftMouseDragged]
+        ) { [weak self] event in
             if self?.window?.isVisible == true {
                 self?.resetCursorTimer()
             }
             return event
         }
+        if let monitor { eventMonitors.append(monitor) }
     }
 
     private func resetCursorTimer() {
@@ -117,18 +124,19 @@ final class FrameWindowController: NSWindowController {
     // MARK: Keyboard
 
     private func setupKeyBindings(_ win: NSWindow) {
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+        let monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self, self.window?.isVisible == true else { return event }
             switch event.keyCode {
-            case 53:  self.hide()               // ESC
-            case 123: self.appState.retreat()   // ←
-            case 124: self.appState.advance()   // →
-            case 49:  self.appState.togglePause() // SPACE
-            case 12:  self.hide()               // Q
+            case 53:  self.hide()                  // ESC
+            case 123: self.appState.retreat()      // ←
+            case 124: self.appState.advance()      // →
+            case 49:  self.appState.togglePause()  // SPACE
+            case 12:  self.hide()                  // Q
             default:  return event
             }
             return nil
         }
+        if let monitor { eventMonitors.append(monitor) }
     }
 
     // MARK: Hotkey (⌘⇧A)

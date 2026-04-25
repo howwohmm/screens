@@ -5,7 +5,7 @@ import CryptoKit
 
 private let cacheDir: URL = {
     let dir = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent(".arenaframe/cache/images", isDirectory: true)
+        .appendingPathComponent(".screens/cache/images", isDirectory: true)
     try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     return dir
 }()
@@ -26,7 +26,7 @@ actor ArenaClient {
 
     init() {
         let config = URLSessionConfiguration.default
-        config.httpAdditionalHeaders = ["User-Agent": "arenaframe/1.0"]
+        config.httpAdditionalHeaders = ["User-Agent": "screens/1.0"]
         config.timeoutIntervalForRequest = 15
         self.session = URLSession(configuration: config)
     }
@@ -39,11 +39,11 @@ actor ArenaClient {
         let perPage = 100
 
         while true {
-            var comps = URLComponents(url: baseURL.appendingPathComponent("channels/\(slug)/contents"), resolvingAgainstBaseURL: false)!
-            comps.queryItems = [
-                URLQueryItem(name: "page", value: "\(page)"),
-                URLQueryItem(name: "per",  value: "\(perPage)")
-            ]
+            let comps = URLComponents(url: baseURL.appendingPathComponent("channels/\(slug)/contents"), resolvingAgainstBaseURL: false)!
+                .with(queryItems: [
+                    URLQueryItem(name: "page", value: "\(page)"),
+                    URLQueryItem(name: "per",  value: "\(perPage)")
+                ])
             let (data, resp) = try await session.data(from: comps.url!)
             if let http = resp as? HTTPURLResponse {
                 if http.statusCode == 404 { throw ArenaError.channelNotFound(slug) }
@@ -54,7 +54,8 @@ actor ArenaClient {
             let items = decoded.items
             let blocks = items.compactMap { $0.toBlock(channelSlug: slug) }
             all.append(contentsOf: blocks)
-            let hasMore = decoded.meta?.hasMorePages ?? (items.count >= perPage)
+            // Use total_pages / current_page from meta (more reliable than item count heuristic)
+            let hasMore = decoded.meta?.hasMorePages ?? (items.count >= perPage)  // fallback if meta absent
             if !hasMore || items.isEmpty { break }
             page += 1
         }
@@ -91,11 +92,11 @@ actor ArenaClient {
         }
     }
 
-    // MARK: Validate channel (for onboarding)
+    // MARK: Validate channel (for onboarding + settings)
+    // Only fetches the channel metadata endpoint — fast even for huge channels.
 
-    func validateChannel(slug: String) async throws -> (name: String, count: Int, previews: [ArenaBlock]) {
-        // Fetch just first page to validate + get previews
-        var comps = URLComponents(url: baseURL.appendingPathComponent("channels/\(slug)"), resolvingAgainstBaseURL: false)!
+    func validateChannel(slug: String) async throws -> (name: String, count: Int) {
+        let comps = URLComponents(url: baseURL.appendingPathComponent("channels/\(slug)"), resolvingAgainstBaseURL: false)!
         let (data, resp) = try await session.data(from: comps.url!)
         if let http = resp as? HTTPURLResponse {
             if http.statusCode == 404 { throw ArenaError.channelNotFound(slug) }
@@ -106,9 +107,17 @@ actor ArenaClient {
             let length: Int?
         }
         let info = try JSONDecoder().decode(ChannelInfo.self, from: data)
-        let blocks = try await fetchChannel(slug: slug)
-        let previews = Array(blocks.filter(\.isVisual).prefix(3))
-        return (name: info.title ?? slug, count: info.length ?? blocks.count, previews: previews)
+        return (name: info.title ?? slug, count: info.length ?? 0)
+    }
+}
+
+// MARK: - URLComponents helper
+
+private extension URLComponents {
+    func with(queryItems: [URLQueryItem]) -> URLComponents {
+        var copy = self
+        copy.queryItems = queryItems
+        return copy
     }
 }
 
