@@ -79,19 +79,14 @@ struct FrameView: View {
         switch appState.fitMode {
 
         case .contain:
-            // Full image always visible — no scaleEffect, no clip.
-            // ignoresSafeArea so the image fills the real screen pixels,
-            // not the menu-bar-minus safe area box.
             Image(nsImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
 
         case .blurFill:
             ZStack {
-                // Blurred background fills screen — KB zoom is safe here,
-                // the blur hides any edge artefacts from the scale.
+                // Blurred background — KB zoom only hits this layer.
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -100,14 +95,12 @@ struct FrameView: View {
                     .blur(radius: 40)
                     .overlay(Color.black.opacity(0.35))
                     .clipped()
-                    .ignoresSafeArea()
 
-                // Contained image on top — crisp, static, never clipped.
+                // Contained foreground — always fully visible, never clipped.
                 Image(nsImage: img)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .ignoresSafeArea()
             }
         }
     }
