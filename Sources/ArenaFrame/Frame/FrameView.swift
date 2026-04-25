@@ -65,8 +65,10 @@ struct FrameView: View {
             }
         }
         .onChange(of: appState.fitMode) { _, _ in
-            // Fit mode change — snap scale back so the new mode starts clean.
+            // Fit mode change — snap scale back so the new mode starts clean,
+            // then re-evaluate whether KB should be running at all.
             cancelKenBurns()
+            startKenBurns(duration: appState.intervalSeconds)
         }
     }
 
@@ -221,12 +223,16 @@ struct FrameView: View {
 
         guard appState.transitionStyle == .kenBurns else { return }
 
+        // Cover mode: image already fills the screen via .fill — adding any scale
+        // crops content (205 pts at 1.08× on a 2560-wide screen). Keep scale at 1.0;
+        // the crossfade transition still runs, giving a clean cut.
+        guard appState.fitMode != .cover else { return }
+
         let anchors: [UnitPoint] = [.topLeading, .top, .topTrailing,
                                      .leading, .center, .trailing,
                                      .bottomLeading, .bottom, .bottomTrailing]
-        // Set a fixed anchor — the zoom toward that corner creates the drift.
-        // Never animate kbAnchor: moving the scale anchor mid-animation causes
-        // the image to lurch (the pivot point changes while scale is non-1).
+        // Fixed anchor for the duration — zoom toward that corner for directional drift.
+        // Never animate kbAnchor: moving the pivot while scale != 1 causes a visual lurch.
         kbAnchor = anchors.randomElement() ?? .center
 
         withAnimation(.linear(duration: max(duration, 5))) {
