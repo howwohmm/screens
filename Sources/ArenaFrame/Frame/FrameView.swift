@@ -17,7 +17,7 @@ struct FrameView: View {
     // Overlay
     @State private var showOverlay: Bool = false
     @State private var clockString: String = ""
-    private let clockTimer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
+    private let clockTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
@@ -105,8 +105,13 @@ struct FrameView: View {
     // MARK: Text content
 
     private func textContent(text: String) -> some View {
-        ScrollView {
-            Text(text)
+        let attributed = (try? AttributedString(
+            markdown: text,
+            options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        )) ?? AttributedString(text)
+
+        return ScrollView {
+            Text(attributed)
                 .font(.system(size: 24, weight: .light))
                 .foregroundStyle(.white.opacity(0.82))
                 .multilineTextAlignment(.center)
@@ -208,8 +213,9 @@ struct FrameView: View {
                                      .leading, .center, .trailing,
                                      .bottomLeading, .bottom, .bottomTrailing]
         // Pick distinct start + end anchors for visible directional drift
-        kbAnchor = anchors.randomElement() ?? .center
-        let endAnchor = anchors.randomElement() ?? .center
+        let startAnchor = anchors.randomElement() ?? .center
+        kbAnchor = startAnchor
+        let endAnchor = anchors.filter { $0 != startAnchor }.randomElement() ?? .bottomTrailing
 
         withAnimation(.linear(duration: max(duration, 5))) {
             kbScale = 1.08
