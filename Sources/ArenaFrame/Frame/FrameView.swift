@@ -55,6 +55,19 @@ struct FrameView: View {
         .onChange(of: appState.labelVisibility) { _, new in
             showOverlay = (new == .always)
         }
+        .onChange(of: appState.transitionStyle) { _, new in
+            // When user switches transition style from settings, update KB state
+            // immediately on the current slide rather than waiting for next advance.
+            if new == .kenBurns {
+                startKenBurns(duration: appState.intervalSeconds)
+            } else {
+                cancelKenBurns()
+            }
+        }
+        .onChange(of: appState.fitMode) { _, _ in
+            // Fit mode change — snap scale back so the new mode starts clean.
+            cancelKenBurns()
+        }
     }
 
     // MARK: Visual content
@@ -199,7 +212,6 @@ struct FrameView: View {
 
     private func startKenBurns(duration: Double) {
         // Cancel any in-flight KB animation before starting a new one.
-        // Without this, the old animation's interpolated value overwrites the reset.
         var cancel = Transaction()
         cancel.disablesAnimations = true
         withTransaction(cancel) {
@@ -212,15 +224,20 @@ struct FrameView: View {
         let anchors: [UnitPoint] = [.topLeading, .top, .topTrailing,
                                      .leading, .center, .trailing,
                                      .bottomLeading, .bottom, .bottomTrailing]
-        // Pick distinct start + end anchors for visible directional drift
-        let startAnchor = anchors.randomElement() ?? .center
-        kbAnchor = startAnchor
-        let endAnchor = anchors.filter { $0 != startAnchor }.randomElement() ?? .bottomTrailing
+        // Set a fixed anchor — the zoom toward that corner creates the drift.
+        // Never animate kbAnchor: moving the scale anchor mid-animation causes
+        // the image to lurch (the pivot point changes while scale is non-1).
+        kbAnchor = anchors.randomElement() ?? .center
 
         withAnimation(.linear(duration: max(duration, 5))) {
             kbScale = 1.08
-            kbAnchor = endAnchor
         }
+    }
+
+    private func cancelKenBurns() {
+        var cancel = Transaction()
+        cancel.disablesAnimations = true
+        withTransaction(cancel) { kbScale = 1.0 }
     }
 
     // MARK: Load block

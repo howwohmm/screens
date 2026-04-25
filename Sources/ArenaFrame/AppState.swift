@@ -33,9 +33,9 @@ final class AppState {
     var labelVisibility: LabelVisibility {
         didSet { UserDefaults.standard.set(labelVisibility.rawValue, forKey: "labelVisibility") }
     }
-    var maxUpscale: Double {
-        didSet { UserDefaults.standard.set(maxUpscale, forKey: "maxUpscale"); rebuildOrder() }
-    }
+    // Hardcoded — slider was allowing low-res images through at high values,
+    // causing blurry upscaled mess in cover mode. 2.0x is the right cap.
+    let maxUpscale: Double = 2.0
     var showClock: Bool {
         didSet { UserDefaults.standard.set(showClock, forKey: "showClock") }
     }
@@ -83,7 +83,7 @@ final class AppState {
         self.fitMode           = FitMode(rawValue: d.string(forKey: "fitMode") ?? "")  ?? .contain
         self.transitionStyle   = TransitionStyle(rawValue: d.string(forKey: "transitionStyle") ?? "") ?? .crossfade
         self.labelVisibility   = LabelVisibility(rawValue: d.string(forKey: "labelVisibility") ?? "") ?? .onHover
-        self.maxUpscale        = d.double(forKey: "maxUpscale").nonZeroOr(2.0)
+        // maxUpscale is now hardcoded — drop any stored value
         self.showClock         = d.bool(forKey: "showClock")
         self.hasCompletedOnboarding = d.bool(forKey: "hasCompletedOnboarding")
         self.launchAtLogin     = d.bool(forKey: "launchAtLogin")

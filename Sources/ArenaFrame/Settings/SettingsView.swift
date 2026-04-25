@@ -169,16 +169,6 @@ struct SettingsView: View {
                     .colorScheme(.dark)
                 }
 
-                row("quality filter") {
-                    HStack(spacing: 10) {
-                        Slider(value: $appState.maxUpscale, in: 1...4, step: 0.5)
-                            .tint(.white.opacity(0.4))
-                        Text("≤ \(String(format: "%.1f", appState.maxUpscale))×")
-                            .font(.system(size: 12, weight: .light).monospacedDigit())
-                            .foregroundStyle(.white.opacity(0.4))
-                            .frame(width: 46, alignment: .trailing)
-                    }
-                }
             }
         }
     }
