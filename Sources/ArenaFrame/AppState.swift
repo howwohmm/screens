@@ -115,13 +115,17 @@ final class AppState {
 
     func fetchAll() {
         guard !channelSlugs.isEmpty else { return }
+        guard !isFetching else { return }
         isFetching = true
         Task { @MainActor in
             let blocks = await client.fetchAllChannels(slugs: channelSlugs)
-            self.allBlocks   = blocks
-            self.currentIndex = 0
-            self.rebuildOrder()
-            self.isFetching  = false
+            if !blocks.isEmpty || self.allBlocks.isEmpty {
+                let wasEmpty = self.orderedBlocks.isEmpty
+                self.allBlocks = blocks
+                if wasEmpty { self.currentIndex = 0 }
+                self.rebuildOrder()
+            }
+            self.isFetching = false
         }
     }
 
