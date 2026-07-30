@@ -15,7 +15,7 @@
 
 <br />
 
-A minimal macOS menu bar app that turns any display into a living window into your [Are.na](https://are.na) collections. Built entirely with the public Are.na v3 API — no account or OAuth required for public channels.
+screens is a minimal macOS menu bar app. It makes any display a living window into your [Are.na](https://are.na) collections. It uses only the public Are.na v3 API. Public channels need no account and no OAuth.
 
 Free and open source.
 
@@ -23,36 +23,36 @@ Free and open source.
 
 ## features
 
-- fullscreen frame at screen-saver level — sits above everything
-- global hotkey `⌘⇧A` to open/close — no Accessibility permission needed
-- **fit modes** — contain (letterboxed), cover (fill + crop), blur fill (blurred background)
-- **transitions** — crossfade, ken burns (slow pan + zoom), instant
-- quality filter — skips low-res images on large displays (configurable max upscale)
-- cursor auto-hides after 1 second, reappears on movement
+- fullscreen frame at screen-saver level, above everything else
+- global hotkey `⌘⇧A` to open and close, no Accessibility permission needed
+- **fit modes**: contain (letterboxed), cover (fill + crop), blur fill (blurred background)
+- **transitions**: crossfade, ken burns (slow pan + zoom), instant
+- quality filter: skips low-res images on large displays (configurable max upscale)
+- cursor hides after 1 second and reappears on movement
 - label overlay: never / on hover / always
 - minimal clock overlay (HH:MM)
 - launch at login
-- SHA-256 disk cache — images persist across sessions
+- SHA-256 disk cache: images persist across sessions
 
 ## install
 
 1. download `screens.dmg` from [releases](../../releases/latest)
 2. open the DMG, drag `screens` → Applications
-3. **right-click** the app → click **Open** (do not double-click — see below)
+3. **right-click** the app → click **Open** (do not double-click, see below)
 4. click the `⊡` icon in your menu bar → add a public Are.na channel slug
 
 ### macOS security warning (read this)
 
-screens is not notarized yet, so macOS will complain the first time. here's exactly what to do:
+screens is not notarized yet, so macOS shows a warning the first time. this is what to do:
 
 **if you see "unidentified developer":**
 
 > 1. click **OK** to dismiss the alert
 > 2. open **System Settings** → **Privacy & Security** → scroll down
-> 3. you'll see _"screens was blocked from use because it is not from an identified developer"_ → click **Open Anyway**
-> 4. enter your Mac password if prompted → click **Open Anyway** again
+> 3. find _"screens was blocked from use because it is not from an identified developer"_ → click **Open Anyway**
+> 4. enter your Mac password if macOS asks → click **Open Anyway** again
 >
-> that's it. you only need to do this once.
+> you only need to do this once.
 
 **if you see "damaged and can't be opened":**
 
@@ -60,9 +60,9 @@ screens is not notarized yet, so macOS will complain the first time. here's exac
 > ```
 > xattr -cr /Applications/screens.app
 > ```
-> then try opening again normally.
+> then open the app normally.
 
-macOS will fully trust the app after the first successful open — no warnings after that.
+macOS trusts the app fully after the first successful open. no warnings appear after that.
 
 ## usage
 
@@ -135,11 +135,11 @@ Sources/ArenaFrame/
 
 ## built with
 
-- [Are.na public API v3](https://dev.are.na) — `api.are.na/v3`
+- [Are.na public API v3](https://dev.are.na) at `api.are.na/v3`
 - SwiftUI + AppKit
-- Carbon `RegisterEventHotKey` — global hotkey, zero permissions
-- CryptoKit — SHA-256 image cache keys
-- ServiceManagement — launch at login
+- Carbon `RegisterEventHotKey` for the global hotkey, zero permissions
+- CryptoKit for SHA-256 image cache keys
+- ServiceManagement for launch at login
 
 ## contributing
 
